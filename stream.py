@@ -5,6 +5,7 @@ class Stream:
         self.items = []
         self.operation = None
         self.thread = threading.Thread(target=self.run)
+        self.stop_requested = False
         self.thread.start()
         
     def add(self, item):
@@ -25,7 +26,7 @@ class Stream:
         return new_stream
         
     def run(self):
-        while True:
+        while not self.stop_requested:
             if self.operation and self.items:
                 item = self.items.pop(0)
                 result = self.operation(item)
@@ -40,6 +41,7 @@ class Stream:
         
     def stop(self):
         self.add(False)
+        self.stop_requested = True
         self.thread.join()
         self.operation = None
         del self.items[:]
